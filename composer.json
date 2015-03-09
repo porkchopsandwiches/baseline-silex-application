@@ -1,0 +1,27 @@
+{
+  "name": "porkchopsandwiches/baseline-silex-application",
+  "description": "Baseline application class for Silex projects.",
+  "keywords": ["silex"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Cam Morrow",
+      "email": "cam@hoodlum.com.au",
+      "homepage": "http://www.hoodlum.com.au"
+    }
+  ],
+  "require": {
+    "php": ">=5.5",
+    "porkchopsandwiches/silex-utilities": "~1.0",
+    "porkchopsandwiches/preserialiserserviceprovider": "~1.0",
+    "silex/silex": "~1.2",
+    "twig/twig": "~1.18"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.5.*",
+    "monolog/monolog": "~1.13"
+  },
+  "autoload": {
+    "psr-0": {"PorkChopSandwiches\\Silex\\Baseline": "lib/src"}
+  }
+}
