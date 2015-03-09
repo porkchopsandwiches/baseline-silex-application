@@ -270,7 +270,7 @@ class Application extends SilexApplication {
 	# Booting
 	# -----------------------------------------------------
 
-	private function bootstrapInternalServices () {
+	protected function bootstrapInternalServices () {
 		$this["app.arrays"] = $this -> share(function () {
 			return new Arrays();
 		});
