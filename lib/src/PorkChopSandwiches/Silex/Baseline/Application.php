@@ -17,6 +17,7 @@ use PorkChopSandwiches\Silex\Utilities\Arrays;
 use PorkChopSandwiches\Preserialiser\Preserialiser;
 use Monolog\Logger;
 use Twig_Environment;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class Application
@@ -76,6 +77,20 @@ class Application extends SilexApplication {
 	 */
 	static public function getTwig () {
 		return self::$app["twig"];
+	}
+
+	/**
+	 * @return EventDispatcher
+	 */
+	static public function getDispatcher () {
+		return self::$app["dispatcher"];
+	}
+
+	/**
+	 * @return ControllerCollection
+	 */
+	static public function getControllersFactory () {
+		return new ControllerCollection(self::$app["route_factory"]);
 	}
 
 	/**
