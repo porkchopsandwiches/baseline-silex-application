@@ -101,22 +101,27 @@ class Application extends SilexApplication {
 	# Configuration
 	# -----------------------------------------------------
 
-	static private $default_config = array(
-		"environment"	=> array(
-			"debug"			=> false,
-			"debug_log"		=> false
-		),
-		"monolog" => array(
-			"path" => "monolog.log"
-		),
-		"session" => array(
-			"enabled"	=> false
-		),
-		"twig" => array(
-			"enabled" => true,
-			"path" => "source/twig/views"
-		)
-	);
+	/**
+	 * @return array
+	 */
+	protected function getBaselineConfig () {
+		return array(
+			"environment"	=> array(
+				"debug"			=> false,
+				"debug_log"		=> false
+			),
+			"monolog" => array(
+				"path" => "monolog.log"
+			),
+			"session" => array(
+				"enabled"	=> false
+			),
+			"twig" => array(
+				"enabled" => true,
+				"path" => "source/twig/views"
+			)
+		);
+	}
 
 
 	/**
@@ -142,7 +147,7 @@ class Application extends SilexApplication {
 	 * Prepares the App configuration.
 	 */
 	final protected function bootstrapConfig () {
-		$config = self::getArraysService() -> deepMerge(self::$default_config, $this -> loadAppConfig());
+		$config = self::getArraysService() -> deepMerge($this -> getBaselineConfig(), $this -> loadAppConfig());
 		$this["app.config"]	= new Tree($config);
 	}
 
