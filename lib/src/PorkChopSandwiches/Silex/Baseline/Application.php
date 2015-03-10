@@ -4,7 +4,6 @@ namespace PorkChopSandwiches\Silex\Baseline;
 
 use PorkChopSandwiches\PreserialiserServiceProvider\PreserialiserServiceProvider;
 use PorkChopSandwiches\Silex\Utilities\Config\Tree;
-use PorkChopSandwiches\Silex\Utilities\Config\SchemaInterface;
 use Silex\Application as SilexApplication;
 use Silex\Provider\MonologServiceProvider;
 use Silex\Provider\SessionServiceProvider;
@@ -18,12 +17,27 @@ use PorkChopSandwiches\Preserialiser\Preserialiser;
 use Monolog\Logger;
 use Twig_Environment;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use PorkChopSandwiches\Silex\Baseline\ConfigLoaders\ConfigLoaderInterface;
+use PorkChopSandwiches\Silex\Utilities\Config\Exceptions\InvalidKeyException;
+use PorkChopSandwiches\Silex\Utilities\Config\Exceptions\NonExistentKeyException;
 
 /**
  * Class Application
  * @abstract
  */
 class Application extends SilexApplication {
+
+	/** @var ConfigLoaderInterface */
+	protected $config_loader;
+
+	/**
+	 * @param ConfigLoaderInterface $config_loader
+	 * @return $this
+	 */
+	public function setConfigLoader (ConfigLoaderInterface $config_loader) {
+		$this -> config_loader = $config_loader;
+		return $this;
+	}
 
 	# -----------------------------------------------------
 	# Singleton handling
@@ -32,9 +46,12 @@ class Application extends SilexApplication {
 	/** @var Application $app */
 	static protected $app = null;
 
-	static public function getInstance (array $values = array()) {
+	/**
+	 * @return Application
+	 */
+	static public function getInstance () {
 		if (is_null(self::$app)) {
-			self::$app = new static($values);
+			self::$app = new static();
 		}
 
 		return self::$app;
@@ -96,8 +113,8 @@ class Application extends SilexApplication {
 	/**
 	 * @return mixed|Tree
 	 *
-	 * @throws \PorkChopSandwiches\Silex\Utilities\Config\Exceptions\InvalidKeyException
-	 * @throws \PorkChopSandwiches\Silex\Utilities\Config\Exceptions\NonExistentKeyException
+	 * @throws InvalidKeyException
+	 * @throws NonExistentKeyException
 	 */
 	static public function getAppConfig () {
 		$args = func_get_args();
@@ -138,32 +155,11 @@ class Application extends SilexApplication {
 		);
 	}
 
-
-	/**
-	 * Load the App custom configuration (i.e. from file, etc).
-	 * Should be overridden by extending classes.
-	 *
-	 * @return array
-	 */
-	protected function loadAppConfig () {
-		return array();
-	}
-
-	/**
-	 * Load the App custom configuration schema.
-	 *
-	 * @return null|SchemaInterface
-	 */
-	protected function loadAppConfigSchema () {
-		return null;
-	}
-
 	/**
 	 * Prepares the App configuration.
 	 */
 	final protected function bootstrapConfig () {
-		$config = self::getArraysService() -> deepMerge($this -> getBaselineConfig(), $this -> loadAppConfig());
-		$this["app.config"]	= new Tree($config);
+		$this["app.config"]	= $this -> config_loader -> getAppConfig($this -> getBaselineConfig());
 	}
 
 	# -----------------------------------------------------
